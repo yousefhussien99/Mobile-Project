@@ -1,0 +1,338 @@
+{
+	"info": {
+		"_postman_id": "65b0a148-1f8e-497a-aa50-70ccc14fff2c",
+		"name": "Mobile-Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31545706"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"youssef\",\r\n  \"email\": \"youssef@stud.fci-cu.edu.eg\",\r\n  \"password\": \"password123\",\r\n  \"gender\": \"male\",\r\n  \"level\": 3\r\n}\r\n"
+						},
+						"url": "http://localhost:8000/auth/register/"
+					},
+					"response": []
+				},
+				{
+					"name": "getToken",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"youssef@stud.fci-cu.edu.eg\",\r\n  \"password\": \"password123\"\r\n}\r\n"
+						},
+						"url": "http://localhost:8000/auth/token/"
+					},
+					"response": []
+				},
+				{
+					"name": "refreshToken",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refresh\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NTU0OTA3OCwiaWF0IjoxNzQ1NDYyNjc4LCJqdGkiOiI5ZmRhNTM5Y2Y1ZDc0YmFhODM1Zjg5MzJkMTgxYmJhOCIsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoieW91c3NlZiIsImVtYWlsIjoieW91c3NlZkBzdHVkLmZjaS1jdS5lZHUuZWcifQ.BrJBZ4eXDKIpCij4EhrKMmDM4TjMfrw7ZOxsokRYXLE\"\r\n}"
+						},
+						"url": "http://localhost:8000/auth/token/refresh/"
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Stores",
+			"item": [
+				{
+					"name": "getAllStores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8000/store/stores/"
+					},
+					"response": []
+				},
+				{
+					"name": "getStoreById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8000/store/stores/1/"
+					},
+					"response": []
+				},
+				{
+					"name": "createStore",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"New Cafe\",\r\n  \"type\": \"cafe\",\r\n  \"location\": \"Downtown\",\r\n  \"latitude\": 40.7128,\r\n  \"longitude\": -74.0060\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8000/store/stores/create/"
+					},
+					"response": []
+				},
+				{
+					"name": "updateStore",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Updated Cafe\",\r\n  \"type\": \"cafe\",\r\n  \"location\": \"Updated Location\",\r\n  \"latitude\": 40.7138,\r\n  \"longitude\": -74.0070\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8000/store/stores/update/1/"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteStore",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8000/store/stores/delete/1/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "productList",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8000/product/products/"
+					},
+					"response": []
+				},
+				{
+					"name": "productDetail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8000/product/products/1/"
+					},
+					"response": []
+				},
+				{
+					"name": "storeProductList",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8000/product/store/1/products/"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllStoreOfProduct",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8000/product/store/products/1/"
+					},
+					"response": []
+				},
+				{
+					"name": "addProduct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"New Product\",\r\n    \"description\": \"Description of new product\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8000/product/products/add/"
+					},
+					"response": []
+				},
+				{
+					"name": "addStoreProduct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"store\": 1,\r\n    \"product\":1,\r\n    \"quantity\": 20,\r\n    \"price\": \"15.00\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8000/product/store/products/add/"
+					},
+					"response": []
+				},
+				{
+					"name": "updateProduct",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"New Product\",\r\n    \"description\": \"Description of new product\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8000/product/products/update/1/"
+					},
+					"response": []
+				},
+				{
+					"name": "updateStoreProduct",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"store\": 1,\r\n    \"product\": 1,\r\n    \"quantity\": 25,\r\n    \"price\": \"18.00\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8000/product/store/products/update/1/"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteProduct",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8000/product/products/delete/1/"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteStoreProduct",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8000/product/store/products/delete/1/"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": {
+			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NTA4OTQ3LCJpYXQiOjE3NDU0NjU3NDcsImp0aSI6IjRiN2IxZTA4M2ViNTQ3YmE4OThjMGQ5OWY4MjRiNDZiIiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJ5b3Vzc2VmIiwiZW1haWwiOiJ5b3Vzc2VmQHN0dWQuZmNpLWN1LmVkdS5lZyJ9.zinyOjw3RZ71FDFNnZJtC-zz8m4LJ10UMOEG1JzegXM"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "A",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDY0NTc4LCJpYXQiOjE3NDU0NjQyNzgsImp0aSI6ImI5YTMwZTM1ZGY5ZjRlZTZhZjQ4MzA2NzhmOGNkZjYxIiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJ5b3Vzc2VmIiwiZW1haWwiOiJ5b3Vzc2VmQHN0dWQuZmNpLWN1LmVkdS5lZyJ9.YNBbcwt1PBv4MkNOrpQJW1oxqSb6UbfPxPNgtCgAgO0",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
