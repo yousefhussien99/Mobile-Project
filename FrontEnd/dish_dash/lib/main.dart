@@ -5,6 +5,8 @@ import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/auth/presentation/screens/signup_screen.dart';
 import 'features/extra/splash.dart';
+import 'features/restaurant/presentation/cubit/restaurant_cubit.dart';
+import 'features/restaurant/presentation/screens/restaurant_list_screen.dart';
 import 'injection_container.dart' as di;
 
 Future<void> main() async {
@@ -22,6 +24,7 @@ class DishDashApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => di.sl<AuthCubit>()),
+        BlocProvider(create: (_) => RestaurantCubit()..loadRestaurants()), // Add this
       ],
       child: MaterialApp(
         title: 'Dish Dash',
@@ -55,9 +58,11 @@ class DishDashApp extends StatelessWidget {
 
         home: const SplashPage(),
         routes: {
-          '/home': (context) => const HomePage(),
+          '/home': (context) => const RestaurantListScreen(),
+          // '/home': (context) => const HomePage(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
+
         },
       ),
     );

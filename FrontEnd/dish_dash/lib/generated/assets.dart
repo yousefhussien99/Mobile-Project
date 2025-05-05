@@ -7,4 +7,5 @@ class Assets {
   static const String assetsLogo2 = 'assets/Logo2.png';
   static const String assetsLogoSmall = 'assets/Logo_small.png';
 
+
 }

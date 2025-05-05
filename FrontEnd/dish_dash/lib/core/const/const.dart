@@ -18,5 +18,8 @@ class Constants {
   // Make sure your phone and your computer are on the same Wi-Fi network
   // and the server is allowed through the firewall.
 
-  static const String baseUrl = 'http://192.168.1.17:8000';
+  // static const String baseUrl = 'http://192.168.1.17:8000';
+  static const String baseUrl = 'http://192.168.100.36:8000';
+
+
 }

@@ -37,11 +37,11 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
 
     final result = await registerUseCase(
-        userName: userName,
-        email: email,
-        password: password,
-        gender: gender,
-        level: level,
+      userName: userName,
+      email: email,
+      password: password,
+      gender: gender,
+      level: level,
     );
 
     result.fold(
