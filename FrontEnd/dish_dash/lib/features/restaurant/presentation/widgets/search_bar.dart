@@ -71,29 +71,63 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 
     return Column(
       children: [
-        // Search Bar
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            onChanged: widget.onChanged,
-            onSubmitted: (value) {
-              if (value.isNotEmpty) {
-                _navigateToSearchResults(value);
-              }
-            },
-            decoration: InputDecoration(
-              hintText: widget.hintText,
-              prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 15),
+        // Search Bar with Button
+        Row(
+          children: [
+            // Search Bar
+            Expanded(
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  onChanged: widget.onChanged,
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      _navigateToSearchResults(value);
+                    }
+                  },
+                  decoration: InputDecoration(
+                    hintText: widget.hintText,
+                    prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                ),
+              ),
             ),
-          ),
+            // Search Button
+            const SizedBox(width: 8),
+            Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: const Color(0xFFC23435),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.search, color: Colors.white),
+                onPressed: () {
+                  if (_controller.text.isNotEmpty) {
+                    _navigateToSearchResults(_controller.text);
+                  } else {
+                    // Navigate to search screen without query
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ProductSearchResultsScreen(
+                          searchQuery: '',
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
         // Popular Searches (when focused and empty)
         if (widget.isSearchFocused && _controller.text.isEmpty)

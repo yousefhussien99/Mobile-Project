@@ -1,35 +1,31 @@
+// lib/data/models/restaurant_model.dart
 import '../../domain/entities/restaurant.dart';
 
 class RestaurantModel extends Restaurant {
-   RestaurantModel({
-    required super.id,
-    required super.name,
-    required super.logoUrl,
-    required super.categories,
-    required super.isOpen,
-    super.address,
-    required super.coverImageUrl,
-  });
+  RestaurantModel({
+    required int id,
+    required String name,
+    required String type,
+    required String location,
+    required double latitude,
+    required double longitude,
+  }) : super(
+          id: id,
+          name: name,
+          type: type,
+          location: location,
+          latitude: latitude,
+          longitude: longitude,
+        );
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
     return RestaurantModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      logoUrl: json['logoUrl'] as String,
-      categories: List<String>.from(json['categories'] as List),
-      isOpen: json['isOpen'] as bool,
-      address: json['address'] as String?,
-      coverImageUrl: json['coverImageUrl'] as String,
+      id: json['id'],
+      name: json['name'],
+      type: json['type'],
+      location: json['location'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'logoUrl': logoUrl,
-      'categories': categories,
-      'isOpen': isOpen,
-    };
   }
 }

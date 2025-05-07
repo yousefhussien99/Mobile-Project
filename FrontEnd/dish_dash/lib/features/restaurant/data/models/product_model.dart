@@ -1,34 +1,21 @@
-import '../../domain/entities/product.dart';
+import 'package:dish_dash/features/restaurant/domain/entities/product.dart';
 
 class ProductModel extends Product {
-  const ProductModel({
-    required super.id,
-    required super.name,
-    super.imageUrl,
-    required super.price,
-    required super.restaurantName,
-    required super.currency,
-    required super.tags, required super.category,
-    required super.subcategory,
-
-  });
+  ProductModel({
+    required int id,
+    required String name,
+    required String description,
+  }) : super(
+          id: id,
+          name: name,
+          description: description,
+        );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
-    if (json['price'] <= 0) {
-      throw ArgumentError('Price must be positive');
-    }
-
     return ProductModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      imageUrl: json['imageUrl'] as String?,
-      price: (json['price'] as num).toDouble(),
-      restaurantName: json['restaurantName'] as String,
-      currency: json['currency'] as String,
-      tags: (json['tags'] as List<dynamic>).map((tag) => tag as String).toList(),
-      category: json['category'] as String,
-      subcategory: json['subcategory'] as String,
-
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
     );
   }
 
@@ -36,9 +23,10 @@ class ProductModel extends Product {
     return {
       'id': id,
       'name': name,
-      if (imageUrl != null) 'imageUrl': imageUrl,
-      'price': price,
-      'restaurantName': restaurantName,
+      'description': description,
     };
   }
+
+  @override
+  List<Object?> get props => super.props;
 }

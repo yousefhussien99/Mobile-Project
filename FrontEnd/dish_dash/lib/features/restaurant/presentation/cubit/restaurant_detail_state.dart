@@ -1,7 +1,7 @@
-// States
-import '../../domain/entities/product.dart';
+import 'package:dish_dash/features/restaurant/domain/entities/storeProduct.dart';
 import '../../domain/entities/restaurant.dart';
 
+// States
 abstract class RestaurantDetailState {}
 
 class RestaurantDetailInitial extends RestaurantDetailState {}
@@ -14,22 +14,26 @@ class RestaurantDetailLoading extends RestaurantDetailState {
 
 class RestaurantDetailLoaded extends RestaurantDetailState {
   final Restaurant restaurant;
-  final List<Product> menuItems;
-  final Map<String, List<Product>> categorizedMenuItems;
+  final List<StoreProduct> menuItems;
+  final Map<String, List<StoreProduct>> categorizedMenuItems;
 
   RestaurantDetailLoaded({
     required this.restaurant,
     required this.menuItems,
   }) : categorizedMenuItems = _categorizeMenuItems(menuItems);
 
-  static Map<String, List<Product>> _categorizeMenuItems(List<Product> items) {
-    final Map<String, List<Product>> result = {};
+  static Map<String, List<StoreProduct>> _categorizeMenuItems(List<StoreProduct> items) {
+    final Map<String, List<StoreProduct>> result = {};
 
     for (var item in items) {
-      if (!result.containsKey(item.category)) {
-        result[item.category] = [];
+      // You might want to use a different field for categorization
+      // since StoreProduct doesn't have a description field
+      String category = 'Products'; // or use some other categorization logic
+      
+      if (!result.containsKey(category)) {
+        result[category] = [];
       }
-      result[item.category]!.add(item);
+      result[category]!.add(item);
     }
 
     return result;

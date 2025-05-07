@@ -1,34 +1,13 @@
 class Product {
-  final String id;
+  final int id;
   final String name;
-  final String? imageUrl;
-  final double price;
-  final String restaurantName;
-  final String currency;
-  final List<String> tags;
-  final String category;
-  final String subcategory;
+  final String description;
 
- const  Product({
+  Product({
     required this.id,
     required this.name,
-    required this.imageUrl,
-    required this.price,
-    required this.restaurantName,
-    required this.currency,
-    required this.tags,
-    required this.category,
-    required this.subcategory,
-
+    required this.description,
   });
 
-  List<Object?> get props => [
-    id,
-    name,
-    imageUrl,
-    price,
-    restaurantName,
-    currency,
-    tags,
-  ];
+  List<Object?> get props => [id, name, description];
 }

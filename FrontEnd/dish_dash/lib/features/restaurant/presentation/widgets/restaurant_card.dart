@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../data/models/restaurant_model.dart';
+import 'dart:math' as math;
 import '../../domain/entities/restaurant.dart';
 import '../screens/restaurant_detail_screen.dart';
 
@@ -12,34 +11,38 @@ class RestaurantCard extends StatelessWidget {
     required this.restaurant,
   });
 
-  Color _getCardColor(String name) {
-    switch (name) {
-      case 'Starbucks':
-        return Colors.green;
-      case 'Subway':
-        return Colors.amber;
-      case 'Burger King':
-        return Colors.amber;
-      case 'Taco Bell':
-        return Colors.purple;
-      case 'Pizza Hut':
-        return Colors.red;
-      case 'McDonald\'s':
-        return Colors.red;
-      default:
-        return Colors.blue;
-    }
+  // Get first letter or first word character
+  String _getDisplayText() {
+    if (restaurant.name.isEmpty) return '';
+    return restaurant.name[0].toUpperCase();
+  }
+
+  // Generate random color
+  Color _getRandomColor() {
+    final List<Color> colors = [
+      Colors.blue[400]!,
+      Colors.green[400]!,
+      Colors.purple[400]!,
+      Colors.orange[400]!,
+      Colors.red[400]!,
+      Colors.teal[400]!,
+      Colors.indigo[400]!,
+      Colors.pink[400]!,
+    ];
+
+    // Use name as seed to keep color consistent for same restaurant
+    final random = math.Random(restaurant.name.length);
+    return colors[random.nextInt(colors.length)];
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to restaurant detail screen when tapped
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => RestaurantDetailScreen(
-              restaurantId: restaurant.id,
+              restaurantId: restaurant.id.toString(),
               restaurantName: restaurant.name,
             ),
           ),
@@ -50,13 +53,28 @@ class RestaurantCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        color: _getCardColor(restaurant.name),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: Center(
-                child: _buildLogo(restaurant.name),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _getRandomColor(),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    _getDisplayText(),
+                    style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ),
             Container(
@@ -72,42 +90,24 @@ class RestaurantCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        restaurant.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.verified,
-                        color: Colors.green[700],
-                        size: 14,
-                      ),
-                    ],
+                  Text(
+                    restaurant.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Text(
-                        'Open',
-                        style: TextStyle(
-                          color: Colors.green[700],
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        restaurant.categories.join(', '),
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 4),
+                  Text(
+                    restaurant.type,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -116,66 +116,5 @@ class RestaurantCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildLogo(String name) {
-    // In a real app, you would use Image.asset with the actual logo files
-    // Here we're creating simplified logo representations
-    switch (name) {
-      case 'Starbucks':
-        return const Icon(Icons.coffee, size: 50, color: Colors.white);
-      case 'Subway':
-        return const Text(
-          'SUB\nWAY',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        );
-      case 'Burger King':
-        return const Text(
-          'BURGER\nKING',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        );
-      case 'Taco Bell':
-        return const Text(
-          'TACO\nBELL',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        );
-      case 'Pizza Hut':
-        return const Text(
-          'Pizza\nHut',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            fontStyle: FontStyle.italic,
-          ),
-        );
-      case 'McDonald\'s':
-        return const Text(
-          'M',
-          style: TextStyle(
-            color: Colors.yellow,
-            fontWeight: FontWeight.bold,
-            fontSize: 50,
-          ),
-        );
-      default:
-        return const Icon(Icons.restaurant, size: 50, color: Colors.white);
-    }
   }
 }

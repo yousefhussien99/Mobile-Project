@@ -26,9 +26,10 @@ dependencies:
   formz: ^0.6.0
 
   # Map and Location
-  google_maps_flutter: ^2.5.0
   geolocator: ^10.1.0
-  geocoding: ^3.0.0
+  flutter_polyline_points: ^2.0.0
+  flutter_map: ^5.0.0
+  latlong2: ^0.9.0
 
   # UI/UX Improvements
   flutter_svg: ^2.0.7
@@ -54,6 +55,8 @@ dependencies:
   # Cupertino icons (iOS style)
   cupertino_icons: ^1.0.8
   jwt_decoder: ^2.0.1
+
+  internet_connection_checker: ^1.0.0
 
 dev_dependencies:
   flutter_test:

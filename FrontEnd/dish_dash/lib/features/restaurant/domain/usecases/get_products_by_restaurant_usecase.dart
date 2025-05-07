@@ -1,18 +1,14 @@
 import 'package:dartz/dartz.dart';
-
 import 'package:dish_dash/core/errors/failure.dart';
-
-import 'package:dish_dash/features/restaurant/domain/entities/restaurant.dart';
-
-import '../../data/repositories/restaurant_repository_impl.dart';
-import '../entities/product.dart';
+import 'package:dish_dash/features/restaurant/data/models/storeProduct_model.dart';
+import 'package:dish_dash/features/restaurant/domain/repositories/restaurant_repository.dart';
 
 class GetProductsByRestaurantUseCase {
-  final RestaurantRepository restaurantRepository;
+  final RestaurantRepository repository;
 
-  GetProductsByRestaurantUseCase(this.restaurantRepository);
+  GetProductsByRestaurantUseCase(this.repository);
 
-  Future<Either<Failure, List<Restaurant>>> call(String restaurantId) async {
-    return await restaurantRepository.getProductsByRestaurant(restaurantId);
+  Future<Either<Failure, List<StoreProductModel>>> call(String restaurantId) async {
+    return await repository.getProductsByRestaurant(restaurantId);
   }
 }

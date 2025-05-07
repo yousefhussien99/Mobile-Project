@@ -1,3 +1,7 @@
+import 'package:dish_dash/features/restaurant/presentation/cubit/directions_cubit.dart';
+import 'package:dish_dash/features/restaurant/presentation/cubit/map_cubit.dart';
+import 'package:dish_dash/features/restaurant/presentation/cubit/product_cubit.dart';
+import 'package:dish_dash/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +28,15 @@ class DishDashApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => di.sl<AuthCubit>()),
-        BlocProvider(create: (_) => RestaurantCubit()..loadRestaurants()), // Add this
+        BlocProvider(create: (_) => di.sl<RestaurantCubit>()), 
+        BlocProvider(create: (_) => di.sl<ProductCubit>()),
+        BlocProvider(create: (_) => di.sl<RestaurantDetailCubit>()), 
+        BlocProvider(create: (_) => di.sl<MapCubit>()), 
+        BlocProvider(create: (_) => di.sl<DirectionsCubit>()), 
+
+
+ 
+
       ],
       child: MaterialApp(
         title: 'Dish Dash',

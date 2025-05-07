@@ -5,9 +5,21 @@ import '../cubit/restaurant_state.dart';
 import '../widgets/restaurant_card.dart';
 import '../widgets/search_bar.dart';
 
-class RestaurantListScreen extends StatelessWidget {
+class RestaurantListScreen extends StatefulWidget {
   const RestaurantListScreen({super.key});
 
+  @override
+  State<RestaurantListScreen> createState() => _RestaurantListScreenState();
+}
+
+class _RestaurantListScreenState extends State<RestaurantListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load restaurants when screen initializes
+    context.read<RestaurantCubit>().loadRestaurants();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +59,7 @@ class RestaurantListScreen extends StatelessWidget {
               ),
             );
           }
-
+          print(state);
           return const Center(child: Text('Something went wrong'));
         },
       ),
@@ -107,7 +119,7 @@ class RestaurantListScreen extends StatelessWidget {
                       onFocusChanged: (isFocused) => context
                           .read<RestaurantCubit>()
                           .setSearchFocus(isFocused),
-                      suggestions: state.searchSuggestions,
+                      suggestions: [],
                       isSearchFocused: state.isSearchFocused,
                       popularSearchesWithTags: popularSearchesWithTags,
                     ),

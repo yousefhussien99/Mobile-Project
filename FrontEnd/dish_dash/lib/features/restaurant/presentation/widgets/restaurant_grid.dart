@@ -1,8 +1,5 @@
 import 'package:dish_dash/features/restaurant/presentation/widgets/restaurant_card.dart';
 import 'package:flutter/material.dart';
-
-
-import '../../data/models/restaurant_model.dart';
 import '../../domain/entities/restaurant.dart';
 
 class RestaurantGrid extends StatelessWidget {

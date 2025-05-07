@@ -1,20 +1,18 @@
+// lib/domain/entities/restaurant.dart
 class Restaurant {
-  final String id;
+  final int id;
   final String name;
-  final String logoUrl;
-  final List<String> categories;
-  final bool isOpen;
-  final String? address;
-
-
+  final String type;
+  final String location;
+  final double latitude;
+  final double longitude;
 
   Restaurant({
     required this.id,
     required this.name,
-    required this.logoUrl,
-    required this.categories,
-    required this.isOpen,
-    required this.address,
-    required String coverImageUrl,
+    required this.type,
+    required this.location,
+    required this.latitude,
+    required this.longitude,
   });
 }

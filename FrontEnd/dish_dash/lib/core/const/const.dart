@@ -19,7 +19,7 @@ class Constants {
   // and the server is allowed through the firewall.
 
   // static const String baseUrl = 'http://192.168.1.17:8000';
-  static const String baseUrl = 'http://192.168.100.36:8000';
+  static const String baseUrl = 'http://10.0.2.2:8000';
 
 
 }
