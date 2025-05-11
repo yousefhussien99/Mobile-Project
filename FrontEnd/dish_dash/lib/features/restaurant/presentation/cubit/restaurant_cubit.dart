@@ -1,52 +1,74 @@
-import 'package:bloc/bloc.dart';
-import 'package:dish_dash/features/restaurant/domain/usecases/get_all_restaurants_usecase.dart';
-import 'package:dish_dash/features/restaurant/presentation/cubit/restaurant_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import '../../data/models/restaurant_model.dart';
+import '../../domain/repositories/restaurant_repository.dart';
+import 'restaurant_state.dart';
 
-// Cubit
 class RestaurantCubit extends Cubit<RestaurantState> {
-  final GetAllRestaurantsUseCase getAllRestaurantsUseCase;
-  
-  RestaurantCubit({
-    required this.getAllRestaurantsUseCase,
-  }) : super(RestaurantInitial());
+  final RestaurantRepository repository;
+  List<RestaurantModel>? _cachedRestaurants;
 
-  void setSearchFocus(bool isFocused) {
-    if (state is RestaurantLoaded) {
-      final currentState = state as RestaurantLoaded;
-      emit(currentState.copyWith(isSearchFocused: isFocused));
+
+  RestaurantCubit(this.repository,) : super(RestaurantInitial());
+
+  Future<void> fetchRestaurants({bool force = false}) async {
+    if (_cachedRestaurants != null && !force) {
+      emit(RestaurantsLoaded(_cachedRestaurants!));
+      return;
     }
-  }
 
-  void loadRestaurants() async {
     emit(RestaurantLoading());
 
-    final result = await getAllRestaurantsUseCase();
-    
+    final result = await repository.getAllRestaurants();
     result.fold(
-      (failure) => emit(RestaurantError(failure.message)),
-      (restaurants) => emit(RestaurantLoaded(
-        restaurants: restaurants,
-        filteredRestaurants: restaurants,
-      )),
+          (failure) => emit(RestaurantError(failure.message)),
+          (restaurants) {
+        _cachedRestaurants = restaurants;
+        emit(RestaurantsLoaded(restaurants));
+      },
     );
   }
 
-  void searchRestaurants(String query) {
-    if (state is RestaurantLoaded) {
-      final currentState = state as RestaurantLoaded;
 
-      // Filter restaurants based on query
-      final filteredList = query.isEmpty
-          ? currentState.restaurants
-          : currentState.restaurants.where((restaurant) {
-              return restaurant.name.toLowerCase().contains(query.toLowerCase()) ||
-                     restaurant.type.toLowerCase().contains(query.toLowerCase());
-            }).toList();
 
-      emit(currentState.copyWith(
-        filteredRestaurants: filteredList,
-        searchQuery: query,
-      ));
-    }
+  Future<void> fetchProducts() async {
+    emit(RestaurantLoading());
+    final result = await repository.getProducts();
+    result.fold(
+          (failure) => emit(RestaurantError(failure.message)),
+          (products) => emit(ProductsLoaded(products)),
+    );
   }
+
+  Future<void> fetchProductsByRestaurant(String restaurantId) async {
+    emit(RestaurantLoading());
+    final result = await repository.getProductsByRestaurant(restaurantId);
+    result.fold(
+          (failure) => emit(RestaurantError(failure.message)),
+          (products) => emit(StoreProductsLoaded(products)),
+    );
+  }
+
+  Future<void> fetchPopularProducts(String query) async {
+    emit(RestaurantLoading());
+    final result = await repository.getPopularProducts(query);
+    result.fold(
+          (failure) => emit(RestaurantError(failure.message)),
+          (products) => emit(StoreProductsLoaded(products)),
+    );
+  }
+
+  Future<void> fetchProductsBySearch(String query) async {
+    emit(RestaurantLoading());
+    final result = await repository.getProductsBySearch(query);
+    result.fold(
+          (failure) => emit(RestaurantError(failure.message)),
+          (products) => emit(StoreProductsLoaded(products)),
+    );
+  }
+
+  void clearProducts() {
+    emit(StoreProductsLoaded([]));
+  }
+
 }

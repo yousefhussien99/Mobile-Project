@@ -127,7 +127,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"New Cafe\",\r\n  \"type\": \"cafe\",\r\n  \"location\": \"Downtown\",\r\n  \"latitude\": 40.7128,\r\n  \"longitude\": -74.0060\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"New Cafe\",\r\n  \"type\": \"cafe\",\r\n  \"location\": \"Downtown\",\r\n  \"latitude\": 40.7128,\r\n  \"longitude\": -74.0060,\r\n  \"imgUrl\" : \"https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -145,7 +145,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Updated Cafe\",\r\n  \"type\": \"cafe\",\r\n  \"location\": \"Updated Location\",\r\n  \"latitude\": 40.7138,\r\n  \"longitude\": -74.0070\r\n}\r\n",
+							"raw": "{\r\n \"id\": 1,\r\n        \"name\": \"Tahrir Cafe\",\r\n        \"type\": \"cafe\",\r\n        \"location\": \"Downtown\",\r\n        \"latitude\": 40.7128,\r\n        \"longitude\": -74.006,\r\n        \"imgUrl\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/McDonald%27s_square_2020.svg/960px-McDonald%27s_square_2020.svg.png\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -213,7 +213,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"New Product\",\r\n    \"description\": \"Description of new product\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"New Product\",\r\n    \"description\": \"Description of new product\",\r\n    \"imgUrl\" : \"https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -249,7 +249,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"New Product\",\r\n    \"description\": \"Description of new product\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"New Product\",\r\n    \"description\": \"Description of new product\",\r\n    \"imgUrl\" : \"https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -302,7 +302,7 @@
 	"auth": {
 		"type": "bearer",
 		"bearer": {
-			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NTA4OTQ3LCJpYXQiOjE3NDU0NjU3NDcsImp0aSI6IjRiN2IxZTA4M2ViNTQ3YmE4OThjMGQ5OWY4MjRiNDZiIiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJ5b3Vzc2VmIiwiZW1haWwiOiJ5b3Vzc2VmQHN0dWQuZmNpLWN1LmVkdS5lZyJ9.zinyOjw3RZ71FDFNnZJtC-zz8m4LJ10UMOEG1JzegXM"
+			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2NjgzOTczLCJpYXQiOjE3NDY2NDA3NzMsImp0aSI6ImFiOTA0NTIzNGM3YjQ2OTBhMTYyY2RkYWZlNTE3ZGEzIiwidXNlcl9pZCI6MywidXNlcm5hbWUiOiJ5b3Vzc2VmIiwiZW1haWwiOiJ5b3Vzc2VmQHN0dWQuZmNpLWN1LmVkdS5lZyJ9.4f_Tb7rp3557w2rLJT6R2IEWlO-NCoFCEHMomduhX78"
 		}
 	},
 	"event": [

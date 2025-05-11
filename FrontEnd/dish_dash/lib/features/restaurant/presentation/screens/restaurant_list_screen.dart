@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../cubit/restaurant_cubit.dart';
 import '../cubit/restaurant_state.dart';
 import '../widgets/restaurant_card.dart';
@@ -9,142 +11,93 @@ class RestaurantListScreen extends StatefulWidget {
   const RestaurantListScreen({super.key});
 
   @override
-  State<RestaurantListScreen> createState() => _RestaurantListScreenState();
+  State<RestaurantListScreen> createState() => _HomePageState();
 }
 
-class _RestaurantListScreenState extends State<RestaurantListScreen> {
+class _HomePageState extends State<RestaurantListScreen> {
+  String userName = "";
+
   @override
   void initState() {
     super.initState();
-    // Load restaurants when screen initializes
-    context.read<RestaurantCubit>().loadRestaurants();
+    _loadUserName();
+    _fetchRestaurants(force: false); // fetch on initial load
   }
-  
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('username') ?? 'Guest';
+    });
+  }
+
+  Future<void> _fetchRestaurants({bool force = false}) async {
+    await context.read<RestaurantCubit>().fetchRestaurants(force: force);
+  }
+
+  void _onScreenVisible() {
+    _fetchRestaurants(force: true); // force refresh when screen is visible
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: BlocConsumer<RestaurantCubit, RestaurantState>(
-        listener: (context, state) {
-          if (state is RestaurantError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is RestaurantLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is RestaurantLoaded) {
-            return _buildLoadedState(context, state);
-          }
-
-          if (state is RestaurantError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.message),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context.read<RestaurantCubit>().loadRestaurants(),
-                    child: const Text('Retry'),
-                  ),
-                ],
+      backgroundColor: const Color(0xFFFCFBF9),
+      body: SafeArea(
+        child: VisibilityDetector(
+          key: const Key('restaurant-list'),
+          onVisibilityChanged: (visibilityInfo) {
+            if (visibilityInfo.visibleFraction > 0.5) {
+              _onScreenVisible(); // Refresh data when screen is more than 50% visible
+            }
+          },
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              const SizedBox(height: 8),
+              Text('Welcome, $userName 👋🏻',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text(
+                'Explore available restaurants and cafés in DishDash.',
+                style: TextStyle(fontSize: 13),
               ),
-            );
-          }
-          print(state);
-          return const Center(child: Text('Something went wrong'));
-        },
-      ),
-    );
-  }
-
-  Widget _buildLoadedState(BuildContext context, RestaurantLoaded state) {
-    // Define popular searches with tags
-    final Map<String, List<String>> popularSearchesWithTags = {
-      "Grilled chicken": ["Chicken", "Grilled", "Main Course"],
-      "Pasta": ["Italian", "Main Course", "Vegetarian"],
-      "Sushi": ["Japanese", "Seafood", "Healthy"],
-      "Club sandwiches": ["Sandwich", "Lunch", "Quick Meal"],
-      "Cheesecake": ["Dessert", "Sweet", "Bakery"],
-    };
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        if (state.isSearchFocused) {
-          context.read<RestaurantCubit>().setSearchFocus(false);
-        }
-      },
-      child: RefreshIndicator(
-        onRefresh: () async => context.read<RestaurantCubit>().loadRestaurants(),
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Welcome to DishDash!',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFC23435),
+              const SizedBox(height: 20),
+              const SearchBarWidget(),
+              const SizedBox(height: 24),
+              const Text(
+                'Restaurants & Cafés',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<RestaurantCubit, RestaurantState>(
+                builder: (context, state) {
+                  if (state is RestaurantLoading) {
+                    return const Center(child: CircularProgressIndicator(color: Color(0xFFC23435)));
+                  } else if (state is RestaurantError) {
+                    return Center(child: Text(state.message));
+                  } else if (state is RestaurantsLoaded) {
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.restaurants.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.65,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Explore available restaurants and cafes',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    CustomSearchBar(
-                      onChanged: (query) => context
-                          .read<RestaurantCubit>()
-                          .searchRestaurants(query),
-                      onFocusChanged: (isFocused) => context
-                          .read<RestaurantCubit>()
-                          .setSearchFocus(isFocused),
-                      suggestions: [],
-                      isSearchFocused: state.isSearchFocused,
-                      popularSearchesWithTags: popularSearchesWithTags,
-                    ),
-                  ],
-                ),
+                      itemBuilder: (context, index) {
+                        return RestaurantCardWidget(restaurant: state.restaurants[index]);
+                      },
+                    );
+                  } else {
+                    return const SizedBox(); // Placeholder for initial state
+                  }
+                },
               ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.85,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) => RestaurantCard(
-                    restaurant: state.filteredRestaurants[index],
-                  ),
-                  childCount: state.filteredRestaurants.length,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

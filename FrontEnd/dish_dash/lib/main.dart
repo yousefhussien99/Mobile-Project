@@ -1,7 +1,5 @@
 import 'package:dish_dash/features/restaurant/presentation/cubit/directions_cubit.dart';
 import 'package:dish_dash/features/restaurant/presentation/cubit/map_cubit.dart';
-import 'package:dish_dash/features/restaurant/presentation/cubit/product_cubit.dart';
-import 'package:dish_dash/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,15 +26,9 @@ class DishDashApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => di.sl<AuthCubit>()),
-        BlocProvider(create: (_) => di.sl<RestaurantCubit>()), 
-        BlocProvider(create: (_) => di.sl<ProductCubit>()),
-        BlocProvider(create: (_) => di.sl<RestaurantDetailCubit>()), 
+        BlocProvider(create: (_) => di.sl<RestaurantCubit>()),
         BlocProvider(create: (_) => di.sl<MapCubit>()), 
-        BlocProvider(create: (_) => di.sl<DirectionsCubit>()), 
-
-
- 
-
+        BlocProvider(create: (_) => di.sl<DirectionsCubit>()),
       ],
       child: MaterialApp(
         title: 'Dish Dash',
@@ -71,27 +63,9 @@ class DishDashApp extends StatelessWidget {
         home: const SplashPage(),
         routes: {
           '/home': (context) => const RestaurantListScreen(),
-          // '/home': (context) => const HomePage(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-
         },
-      ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Welcome to Dish Dash!',
-          style: TextStyle(fontSize: 24),
-        ),
       ),
     );
   }

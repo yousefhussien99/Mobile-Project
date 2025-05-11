@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
+import '../../domain/entities/storeProduct.dart';
+
 class DirectionsCubit extends Cubit<DirectionsState> {
   final mapController = MapController();
   DirectionsCubit() : super(DirectionsInitial());
@@ -39,7 +41,7 @@ class DirectionsCubit extends Cubit<DirectionsState> {
   }
 
   Future<void> loadDirections({
-    required Restaurant restaurant,
+    required dynamic restaurant,
     required Position? currentPosition,
   }) async {
     try {
@@ -59,7 +61,7 @@ class DirectionsCubit extends Cubit<DirectionsState> {
       final polyline = Polyline(
         points: points,
         strokeWidth: 4,
-        color: Color(0xFFEF9F27),
+        color: Colors.blue,
         strokeCap: StrokeCap.round,
         strokeJoin: StrokeJoin.round,
       );
@@ -80,7 +82,7 @@ class DirectionsCubit extends Cubit<DirectionsState> {
 
 
   Future<List<Marker>> setupMarkers(
-    Restaurant restaurant,
+    dynamic restaurant,
     Position? currentPosition,
   ) async {
     List<Marker> markers = [];
@@ -94,8 +96,8 @@ class DirectionsCubit extends Cubit<DirectionsState> {
           builder: (context) => Transform.translate(
             offset: Offset(0, 0), // Reduced from -20 to -10
             child: Icon(
-              Icons.location_pin,
-              color: Colors.blue,
+              Icons.location_history,
+              color: Colors.blueGrey,
               size: 40,
             ),
           ),
@@ -111,15 +113,10 @@ class DirectionsCubit extends Cubit<DirectionsState> {
         height: 40,
         builder: (context) => Transform.translate(
           offset: Offset(0, 0), // Reduced from -20 to -10
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/loc.png'),
-                fit: BoxFit.contain,
-              ),
-            ),
+          child: Icon(
+            Icons.food_bank_rounded,
+            color: Color(0xFFC23435),
+            size: 40,
           ),
         ),
         anchorPos: AnchorPos.align(AnchorAlign.top),

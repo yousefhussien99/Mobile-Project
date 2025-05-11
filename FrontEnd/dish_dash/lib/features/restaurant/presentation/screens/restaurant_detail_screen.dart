@@ -1,227 +1,240 @@
-import 'package:dish_dash/features/restaurant/domain/entities/storeProduct.dart';
-import 'package:dish_dash/features/restaurant/presentation/cubit/restaurant_detail_state.dart';
+import 'package:dish_dash/features/restaurant/presentation/screens/restaurant_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/restaurant.dart';
-import '../cubit/restaurant_detail_cubit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import '../../data/models/storeProduct_model.dart';
+import '../cubit/restaurant_cubit.dart';
+import '../cubit/restaurant_state.dart';
 
-class RestaurantDetailScreen extends StatefulWidget {
+class RestaurantDetailsPage extends StatefulWidget {
   final String restaurantId;
-  final String restaurantName;
 
-  const RestaurantDetailScreen({
-    super.key,
-    required this.restaurantId,
-    required this.restaurantName,
-  });
+  const RestaurantDetailsPage({super.key, required this.restaurantId});
 
   @override
-  State<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
+  State<RestaurantDetailsPage> createState() => _RestaurantDetailsPageState();
 }
 
-class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
+class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
   @override
   void initState() {
     super.initState();
-    context.read<RestaurantDetailCubit>().loadRestaurantDetails(widget.restaurantId);
+    context.read<RestaurantCubit>().fetchProductsByRestaurant(widget.restaurantId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<RestaurantDetailCubit, RestaurantDetailState>(
+      backgroundColor: const Color(0xFFFCFBF9),
+      body: BlocBuilder<RestaurantCubit, RestaurantState>(
         builder: (context, state) {
-          if (state is RestaurantDetailLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is RestaurantDetailLoaded) {
-            return RestaurantDetailView(
-              restaurant: state.restaurant,
-              storeProducts: state.menuItems,
-            );
-          } else if (state is RestaurantDetailError) {
+          if (state is RestaurantLoading) {
+            return const Center(child: CircularProgressIndicator(color: Color(0xFFC23435)));
+          } else if (state is RestaurantError) {
             return Center(child: Text(state.message));
+          } else if (state is StoreProductsLoaded && state.storeProducts.isNotEmpty) {
+            final storeProducts = state.storeProducts;
+            final store = storeProducts.first.store;
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Custom Header (Restaurant Image + Back Button)
+                  _buildHeader(store),
+                  const SizedBox(height: 16),
+
+                  // Restaurant Info
+                  _buildRestaurantInfo(store),
+
+                  // Add padding around the Divider and align text to the left
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16), // Add padding to the sides
+                    child: const Divider(height: 36), // Divider with padding
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16), // Add padding to the sides
+                    child: const Text(
+                      "Products",
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Product List
+                  ...storeProducts.map((storeProduct) => _buildProductCard(storeProduct)).toList(),
+                ],
+              ),
+            );
           } else {
-            print(state);
-            return const Center(child: Text('Something went wrong'));
+            return const Center(child: Text("No data found"));
           }
         },
       ),
     );
   }
-}
 
-class RestaurantDetailView extends StatelessWidget {
-  final Restaurant restaurant;
-  final List<StoreProduct> storeProducts;
-
-  const RestaurantDetailView({
-    super.key,
-    required this.restaurant,
-    required this.storeProducts,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        // App Bar
-        SliverAppBar(
-          expandedHeight: 200.0,
-          pinned: true,
-          backgroundColor: Colors.white,
-          flexibleSpace: FlexibleSpaceBar(
-            background: Container(
-              color: Colors.grey[300],
-              child: const Center(
-                child: Icon(
-                  Icons.restaurant,
-                  size: 50,
-                  color: Colors.grey,
-                ),
+  Widget _buildHeader(store) {
+    return Stack(
+      children: [
+        // Restaurant Image
+        ClipRRect(
+          borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24)),
+          child: SizedBox(
+            width: double.infinity,
+            height: 300,
+            child: SvgPicture.asset(
+              store.imgUrl,
+              fit: BoxFit.cover,
+              placeholderBuilder: (context) => Container(
+                color: Colors.grey[200],
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
           ),
-          leading: IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
+        ),
+        // Back Button + Title
+        Positioned(
+          top: 40,
+          left: 16,
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              child: const Icon(Icons.arrow_back, color: Colors.black),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
+              const SizedBox(width: 8),
+            ],
           ),
-        ),
-
-        // Restaurant Info
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  restaurant.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  restaurant.type,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  restaurant.location,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // Products List
-        SliverList(
-          delegate: SliverChildListDelegate([
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Available Products',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ...storeProducts.map((item) => _buildStoreProductItem(item)).toList(),
-          ]),
-        ),
-
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 24),
         ),
       ],
     );
   }
 
-  Widget _buildStoreProductItem(StoreProduct storeProduct) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      child: Card(
-        elevation: 2,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildRestaurantInfo(store) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            store.name.replaceAll('â', "'"),
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Row(
             children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  "Open",
+                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 18),
+              Icon(Icons.location_on, color: Colors.grey[600]),
+              const SizedBox(width: 4),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Product #${storeProduct.product}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          '\$${storeProduct.price}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.inventory_2_outlined, 
-                          size: 16, 
-                          color: Colors.grey[600]
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'In Stock: ${storeProduct.quantity}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                    // You might want to add a button to add to cart here
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add to cart functionality
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 36),
-                      ),
-                      child: const Text('Add to Cart'),
-                    ),
-                  ],
+                child: Text(
+                  store.location ?? 'No address provided',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductCard(StoreProductModel storeProduct) {
+    final product = storeProduct.product;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                _fixEncoding(product.imgUrl),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 50),
+              ),
+            ),
+            const SizedBox(width: 14),
+
+            // Product Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _fixEncoding(product.name),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    product.description ?? 'No description',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "\$${storeProduct.price.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  String _fixEncoding(String text) {
+    return text
+        .replaceAll('Ã¨', 'è')
+        .replaceAll('Ã©', 'é')
+        .replaceAll('Ã¢', 'â')
+        .replaceAll('Ãª', 'ê')
+        .replaceAll('Ã®', 'î')
+        .replaceAll('Ã´', 'ô')
+        .replaceAll('Ã¹', 'ù')
+        .replaceAll('Ã»', 'û')
+        .replaceAll('Ã ', 'à')
+        .replaceAll('Ã§', 'ç')
+        .replaceAll('â', "'") // common apostrophe replacement
+        .replaceAll('Â', '')    // remove extra encoding artifacts
+        .replaceAll(' ', '');   // optional: remove space for CaffèLatte style
   }
 }

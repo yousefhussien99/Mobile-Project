@@ -7,12 +7,16 @@ import 'package:dish_dash/features/restaurant/data/models/storeProduct_model.dar
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../domain/entities/product.dart';
+import '../../domain/entities/restaurant.dart';
+import '../../domain/entities/storeProduct.dart';
+
 abstract class RestaurantRemoteDataSource {
-  Future<RestaurantModel> getRestaurantById(String id);
+  Future<List<StoreProductModel>> getPopularProducts(String query);
   Future<List<RestaurantModel>> getAllRestaurants();
   Future<List<StoreProductModel>> getProductsByRestaurant(String restaurantId);
   Future<List<ProductModel>> getProducts();
-  Future<ProductModel> getProductById(String id);
+  Future<List<StoreProductModel>> getProductsBySearch(String query);
 }
 
 class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
@@ -39,21 +43,23 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
   }
 
   @override
-  Future<RestaurantModel> getRestaurantById(String id) async {
+  Future<List<StoreProductModel>> getPopularProducts(String query) async {
     final headers = await _getHeaders();
     final response = await client.get(
-      Uri.parse('$baseUrl/store/stores/$id/'),
+      Uri.parse('$baseUrl/product/store/products/name/?product_name=$query'),
       headers: headers,
     );
 
     if (response.statusCode == 200) {
-      return RestaurantModel.fromJson(json.decode(response.body));
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => StoreProductModel.fromJson(json)).toList();
     } else if (response.statusCode == 401) {
       throw ServerException(message: 'Unauthorized access');
     } else {
-      throw ServerException(message: 'Failed to fetch restaurant');
+      throw ServerException(message: 'Failed to fetch products');
     }
   }
+
 
   @override
   Future<List<RestaurantModel>> getAllRestaurants() async {
@@ -76,23 +82,17 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
  @override
   Future<List<StoreProductModel>> getProductsByRestaurant(String restaurantId) async {
     try {
-      print('Getting products for restaurant ID: $restaurantId');
       final headers = await _getHeaders();
       
       final url = '$baseUrl/product/store/$restaurantId/products/';
-      print('Making GET request to: $url');
 
       final response = await client.get(
         Uri.parse(url),
         headers: headers,
       );
 
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = json.decode(response.body);
-        print('Successfully parsed JSON list. Number of products: ${jsonList.length}');
         
         return jsonList.map((json) => StoreProductModel.fromJson(json)).toList();
       } else if (response.statusCode == 401) {
@@ -126,23 +126,45 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
   }
 
   @override
-  Future<ProductModel> getProductById(String id) async {
-    final headers = await _getHeaders();
-    final response = await client.get(
-      Uri.parse('$baseUrl/product/products/$id/'),
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      return ProductModel.fromJson(json.decode(response.body));
-    } else if (response.statusCode == 401) {
-      throw ServerException(message: 'Unauthorized access');
-    } else {
-      throw ServerException(message: 'Failed to fetch product');
+  Future<List<StoreProductModel>> getProductsBySearch(String query) async {
+    try {
+      return await _fetchAndFilterProducts(query);
+    } catch (e, stackTrace) {
+      print('Exception in getProductsBySearch: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
-  void dispose() {
-    client.close();
+
+  Future<List<StoreProductModel>> _fetchAndFilterProducts(String query) async {
+    final List<int> restaurantIds = [19, 20, 21, 22, 23, 24];
+
+    // Fetch all restaurant products in parallel
+    final List<List<StoreProductModel>> allProductLists = await Future.wait(
+        restaurantIds.map((id) => getProductsByRestaurant(id.toString()))
+    );
+
+    // Flatten all products into one list
+    final List<StoreProductModel> allProducts = allProductLists.expand((list) => list).toList();
+    final List<StoreProductModel> matchedProducts = [];
+
+    // Match by product name
+    for (final product in allProducts) {
+      if (product.product.name.toLowerCase().contains(query.toLowerCase())) {
+        matchedProducts.add(product);
+      }
+    }
+
+    // Match by product description (only if not already matched)
+    for (final product in allProducts) {
+      if (product.product.description.toLowerCase().contains(query.toLowerCase()) &&
+          !matchedProducts.any((p) => p.id == product.id)) {
+        matchedProducts.add(product);
+      }
+    }
+
+    return matchedProducts;
   }
+
 }

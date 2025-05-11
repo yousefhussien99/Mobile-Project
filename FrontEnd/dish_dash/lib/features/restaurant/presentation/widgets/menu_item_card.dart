@@ -1,68 +1,97 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/product.dart';
+import 'package:dish_dash/features/restaurant/data/models/storeProduct_model.dart';
 
-class MenuItemCard extends StatelessWidget {
-  final Product menuItem;
+class ProductCardWidget extends StatelessWidget {
+  final StoreProductModel product;
 
-  const MenuItemCard({
-    super.key,
-    required this.menuItem,
-  });
+  const ProductCardWidget({required this.product, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 12.0,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Menu Item Icon
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            // Product image
+            Container(
+              width: 100,
+              height: 100,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                image: DecorationImage(
+                  image: AssetImage(_fixEncoding(product.product.imgUrl)), // Use AssetImage for local assets
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            child: const Icon(
-              Icons.restaurant_menu,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(width: 16),
+            const SizedBox(width: 12),
 
-          // Menu Item Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  menuItem.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+            // Product details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product name
+                  Text(
+                    _fixEncoding(product.product.name),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF162B4D),
+                    ),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  menuItem.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                  const SizedBox(height: 10),
+
+                  // Price and Category
+                  Row(
+                    children: [
+                      Text(
+                        '\$${product.price}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFEF9E26),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        _fixEncoding(product.store.name), // Store name fixed
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF7A869A),
+                        ),
+                      ),
+                    ],
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  String _fixEncoding(String text) {
+    return text
+        .replaceAll('Ã¨', 'è')
+        .replaceAll('Ã©', 'é')
+        .replaceAll('Ã¢', 'â')
+        .replaceAll('Ãª', 'ê')
+        .replaceAll('Ã®', 'î')
+        .replaceAll('Ã´', 'ô')
+        .replaceAll('Ã¹', 'ù')
+        .replaceAll('Ã»', 'û')
+        .replaceAll('Ã ', 'à')
+        .replaceAll('Ã§', 'ç')
+        .replaceAll('â', "'") // common apostrophe replacement
+        .replaceAll('Â', '')    // remove extra encoding artifacts
+        .replaceAll(' ', '');   // optional: remove space for CaffèLatte style
   }
 }

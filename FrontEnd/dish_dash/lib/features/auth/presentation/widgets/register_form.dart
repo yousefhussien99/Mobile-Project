@@ -129,7 +129,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   fillColor: Colors.white,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   suffixIcon: IconButton(
-                    icon: Icon(_showPassword ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(_showPassword ? Icons.visibility : Icons.visibility_off),
                     onPressed: () => setState(() => _showPassword = !_showPassword),
                   ),
                 ),
@@ -155,7 +155,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   fillColor: Colors.white,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   suffixIcon: IconButton(
-                    icon: Icon(_showConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(_showConfirmPassword ? Icons.visibility : Icons.visibility_off),
                     onPressed: () => setState(() => _showConfirmPassword = !_showConfirmPassword),
                   ),
                 ),

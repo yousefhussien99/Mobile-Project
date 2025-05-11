@@ -1,113 +1,111 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
-import '../../domain/entities/restaurant.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import '../../data/models/restaurant_model.dart';
+import '../cubit/restaurant_cubit.dart';
 import '../screens/restaurant_detail_screen.dart';
 
-class RestaurantCard extends StatelessWidget {
-  final Restaurant restaurant;
+class RestaurantCardWidget extends StatelessWidget {
+  final RestaurantModel restaurant;
 
-  const RestaurantCard({
-    super.key,
-    required this.restaurant,
-  });
-
-  // Get first letter or first word character
-  String _getDisplayText() {
-    if (restaurant.name.isEmpty) return '';
-    return restaurant.name[0].toUpperCase();
-  }
-
-  // Generate random color
-  Color _getRandomColor() {
-    final List<Color> colors = [
-      Colors.blue[400]!,
-      Colors.green[400]!,
-      Colors.purple[400]!,
-      Colors.orange[400]!,
-      Colors.red[400]!,
-      Colors.teal[400]!,
-      Colors.indigo[400]!,
-      Colors.pink[400]!,
-    ];
-
-    // Use name as seed to keep color consistent for same restaurant
-    final random = math.Random(restaurant.name.length);
-    return colors[random.nextInt(colors.length)];
-  }
+  const RestaurantCardWidget({super.key, required this.restaurant});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
-        Navigator.of(context).push(
+        Navigator.push(
+          context,
           MaterialPageRoute(
-            builder: (context) => RestaurantDetailScreen(
-              restaurantId: restaurant.id.toString(),
-              restaurantName: restaurant.name,
-            ),
+            builder: (_) => RestaurantDetailsPage(restaurantId: restaurant.id.toString()),
           ),
         );
       },
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x1F000000),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: _getRandomColor(),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    _getDisplayText(),
-                    style: const TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+            // Image
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: SvgPicture.asset(
+                  restaurant.imgUrl,
+                  fit: BoxFit.cover,
+                  placeholderBuilder: (_) => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.error, color: Colors.grey)),
                 ),
               ),
             ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
+
+            // Info Section
+            Padding(
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    restaurant.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  // Name and Type
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          restaurant.name.replaceAll('â', "'"),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF162B4D),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    restaurant.type,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 6),
+
+                  // Location and Status
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _capitalizeFirstLetter(restaurant.type),
+                          style: const TextStyle(fontSize: 14, color: Color(0xFF7A869A)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE6F4EA),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          "Open",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF00875A),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -116,5 +114,10 @@ class RestaurantCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _capitalizeFirstLetter(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 }

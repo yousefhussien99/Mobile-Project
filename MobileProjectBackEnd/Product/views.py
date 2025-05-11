@@ -31,22 +31,93 @@ def product_detail(request, product_id):
 def store_product_list(request, store_id):
     products = StoreProduct.objects.filter(store_id=store_id)
     serializer = StoreProductSerializer(products, many=True)
-    return Response(serializer.data)
+    data = []
+    for sp in serializer.data:
+        store = Store.objects.get(id=sp['store'])
+        product = Product.objects.get(id=sp['product'])
+        data.append({
+            "id": sp['id'],
+            "productName": product.name,
+            "description": product.description,
+            "quantity": sp['quantity'],
+            "price": sp['price'],
+            "imageProduct": product.imgUrl,
+            "store": {
+                "id": store.id,
+                "name": store.name,
+                "type": store.type,
+                "location": store.location,
+                "latitude": store.latitude,
+                "longitude": store.longitude,
+                "imgUrl": store.imgUrl,
+            }
+        })
+    return Response(data)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def store_product_detail(request, product_id):
-    try:
-        store_product = StoreProduct.objects.get(id=product_id)
-    except StoreProduct.DoesNotExist:
+    store_products = StoreProduct.objects.filter(product_id=product_id)
+    if not store_products.exists():
         return Response(status=status.HTTP_404_NOT_FOUND)
-    stores = Store.objects.filter(storeproduct__id=product_id)
-    store_serializer = StoreSerializer(stores, many=True)
-    store_product_serializer = StoreProductSerializer(store_product)
-    data = {
-        'store_product': store_product_serializer.data,
-        'stores': store_serializer.data
-    }
+    data = []
+    for sp in store_products:
+        store = sp.store
+        data.append({
+            "id": store.id,
+            "name": store.name,
+            "type": store.type,
+            "location": store.location,
+            "latitude": store.latitude,
+            "longitude": store.longitude,
+            "imgUrl": store.imgUrl,
+            "price": sp.price,
+            "quantity": sp.quantity,
+        })
     return Response(data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def store_product_detail_by_name_of_product(request):
+    product_name = request.query_params.get('product_name')
+    print("product_name", product_name)
+
+    products = Product.objects.filter(name=product_name)
+
+    if not products.exists():
+        return Response({'detail': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    data = []
+    for product in products:
+        store_products = StoreProduct.objects.filter(product=product)
+        if not store_products.exists():
+            continue  # Skip products that aren't in any store
+
+        for sp in store_products:
+            store = sp.store
+            data.append({
+                "id": store.id,
+                "product_name": product.name,
+                "description": product.description,
+                "quantity": sp.quantity,
+                "price": sp.price,
+                "imageProduct": product.imgUrl,
+                "store": {
+                    "id": store.id,
+                    "name": store.name,
+                    "type": store.type,
+                    "location": store.location,
+                    "latitude": store.latitude,
+                    "longitude": store.longitude,
+                    "imgUrl": store.imgUrl,
+                }
+            })
+
+    if not data:
+        return Response({'detail': 'No stores found for this product.'}, status=status.HTTP_404_NOT_FOUND)
+
+    return Response(data)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

@@ -8,7 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 
 class DirectionsScreen extends StatefulWidget {
-  final Restaurant restaurant;
+  final dynamic restaurant;
   final Position? currentPosition;
 
   const DirectionsScreen({
@@ -46,44 +46,43 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor:Colors.white,
+        elevation: 1,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Directions to ${widget.restaurant.name}',
-          style: TextStyle(color: Colors.black),
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
         ),
       ),
       body: BlocBuilder<DirectionsCubit, DirectionsState>(
         bloc: _directionsCubit,
         builder: (context, state) {
           if (state is DirectionsLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (state is DirectionsError) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is DirectionsError) {
             return buildErrorState(_loadDirections, state.message);
-          }
-
-          if (state is DirectionsLoaded) {
+          } else if (state is DirectionsLoaded) {
             final bounds = LatLngBounds.fromPoints(state.polyline.points);
-            
+
             return Column(
               children: [
-                Expanded(
-                  child: buildMapSection(_directionsCubit, state, bounds),
-                ),
+                Expanded(child: buildMapSection(_directionsCubit, state, bounds)),
+                const SizedBox(height: 12),
                 buildInfoSection(context, widget.restaurant, state),
               ],
             );
           }
-
-          return Container();
+          return const SizedBox();
         },
       ),
     );

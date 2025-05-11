@@ -1,9 +1,8 @@
-// lib/features/restaurant/presentation/widgets/directions_widgets.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:dish_dash/features/restaurant/domain/entities/restaurant.dart';
 import 'package:dish_dash/features/restaurant/presentation/cubit/directions_cubit.dart';
 import 'package:dish_dash/features/restaurant/presentation/cubit/directions_state.dart';
+
 
 Widget buildMapSection(
   DirectionsCubit directionsCubit,
@@ -41,7 +40,7 @@ Widget buildMapSection(
         child: FloatingActionButton(
           mini: true,
           backgroundColor: Colors.white,
-          child: Icon(Icons.my_location, color: Colors.black),
+          child: Icon(Icons.my_location, color: Colors.blue),
           onPressed: () {
             directionsCubit.mapController.fitBounds(
               bounds,
@@ -57,66 +56,73 @@ Widget buildMapSection(
 }
 
 Widget buildInfoSection(
-  BuildContext context,
-  Restaurant restaurant,
-  DirectionsLoaded state,
-) {
+    BuildContext context,
+    dynamic restaurant,
+    DirectionsLoaded state,
+    ) {
+  final theme = Theme.of(context);
+
   return Container(
-    padding: EdgeInsets.all(16),
+    width: double.infinity,
+    margin: const EdgeInsets.all(16),
+    padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
       color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.3),
-          spreadRadius: 1,
-          blurRadius: 5,
-          offset: Offset(0, -3),
+          color: Colors.black12,
+          blurRadius: 10,
+          offset: Offset(0, -2),
         ),
       ],
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
       children: [
         buildRestaurantHeader(context, restaurant),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         buildLocationInfo(context, restaurant),
-        SizedBox(height: 10),
+        const SizedBox(height: 16),
         buildRouteInfo(context, state),
       ],
     ),
   );
 }
 
-Widget buildRestaurantHeader(BuildContext context, Restaurant restaurant) {
+Widget buildRestaurantHeader(BuildContext context, dynamic restaurant) {
+  final theme = Theme.of(context);
+
   return Row(
     children: [
       Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: getIconBackgroundColor(restaurant.type),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           getRestaurantIcon(restaurant.type),
           color: Colors.white,
-          size: 24,
+          size: 28,
         ),
       ),
-      SizedBox(width: 12),
+      const SizedBox(width: 14),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               restaurant.name,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               restaurant.type,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).primaryColor,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Color(0xFFC23435),
               ),
             ),
           ],
@@ -126,7 +132,8 @@ Widget buildRestaurantHeader(BuildContext context, Restaurant restaurant) {
   );
 }
 
-Widget buildLocationInfo(BuildContext context, Restaurant restaurant) {
+
+Widget buildLocationInfo(BuildContext context, dynamic restaurant) {
   return Row(
     children: [
       Icon(Icons.location_on, color: Colors.grey),
@@ -178,18 +185,23 @@ Widget buildErrorState(VoidCallback onRetry, String message) {
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.error_outline, size: 48, color: Colors.red),
-        SizedBox(height: 16),
-        Text(message),
-        SizedBox(height: 16),
-        ElevatedButton(
+        Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
+        const SizedBox(height: 16),
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 20),
+        FilledButton(
           onPressed: onRetry,
-          child: Text('Retry'),
+          child: const Text('Try Again'),
         ),
       ],
     ),
   );
 }
+
 
 // Helper functions
 IconData getRestaurantIcon(String type) {
