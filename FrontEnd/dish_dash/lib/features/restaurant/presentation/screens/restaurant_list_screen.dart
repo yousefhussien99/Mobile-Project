@@ -49,18 +49,6 @@ class _HomePageState extends State<RestaurantListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFCFBF9),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text('DishDash', style: TextStyle(color: Colors.black)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.red),
-            onPressed: _logout,
-            tooltip: 'Logout',
-          ),
-        ],
-      ),
       body: SafeArea(
         child: VisibilityDetector(
           key: const Key('restaurant-list'),
@@ -73,8 +61,18 @@ class _HomePageState extends State<RestaurantListScreen> {
             padding: const EdgeInsets.all(16.0),
             children: [
               const SizedBox(height: 8),
-              Text('Welcome, $userName 👋🏻',
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              Row(
+                children: [
+                  Text('Welcome, $userName 👋🏻',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 40),
+                  IconButton(
+                    icon: const Icon(Icons.logout, color: Color(0xFFC23435)),
+                    onPressed: _logout,
+                    tooltip: 'Logout',
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
               const Text(
                 'Explore available restaurants and cafés in DishDash.',

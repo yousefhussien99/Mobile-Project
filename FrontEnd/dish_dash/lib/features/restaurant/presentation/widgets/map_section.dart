@@ -4,7 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 Positioned mapSection(MapState state, MapController mapController, VoidCallback onMapReady) {
-  LatLng defaultCenter = LatLng(30.0444, 31.2357); // Cairo, Egypt
+  LatLng defaultCenter = LatLng(37.3861, -122.0839); // Mountain View, California
 
   return Positioned.fill(
     child: (state is MapError)
