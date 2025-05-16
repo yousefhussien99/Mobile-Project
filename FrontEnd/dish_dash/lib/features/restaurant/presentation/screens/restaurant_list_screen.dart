@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,10 +40,27 @@ class _HomePageState extends State<RestaurantListScreen> {
     _fetchRestaurants(force: true); // force refresh when screen is visible
   }
 
+  Future<void> _logout() async {
+    if (!mounted) return;
+    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFCFBF9),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text('DishDash', style: TextStyle(color: Colors.black)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.red),
+            onPressed: _logout,
+            tooltip: 'Logout',
+          ),
+        ],
+      ),
       body: SafeArea(
         child: VisibilityDetector(
           key: const Key('restaurant-list'),
